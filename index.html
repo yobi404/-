@@ -1,114 +1,447 @@
 <!DOCTYPE html>
-<html lang="zh-Hant-HK">
+<html lang="zh-HK">
 <head>
     <meta charset="UTF-8">
+    <!-- 關鍵：防止手機瀏覽器強行縮小網頁，確保按鍵夠大好點擊 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Yobi-收銀版記帳系統</title>
     <style>
-        :root { --cyber-bg: #05050a; --cyber-yellow: #fcee0a; --cyber-blue: #00f0ff; --cyber-pink: #ff007f; --cyber-purple: #250035; --neon-green: #4ade80; --neon-red: #f87171; }
-        body { font-family: "Microsoft JhengHei", sans-serif; background-color: var(--cyber-bg); color: #fff; margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; box-sizing: border-box; }
-        .global-ads { width: 900px; height: 100px; display: flex; align-items: center; justify-content: center; border: 1px dashed var(--cyber-blue); background: rgba(0, 240, 255, 0.05); color: var(--cyber-blue); text-shadow: 0 0 3px var(--cyber-blue); font-weight: bold; font-size: 14px; box-sizing: border-box; letter-spacing: 1px; }
-        .top-ads { margin-bottom: 15px; }
-        .bottom-ads { margin-top: 15px; }
-        .container { width: 900px; background: rgba(20, 10, 35, 0.6); border: 2px solid var(--cyber-blue); border-radius: 6px; padding: 15px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 0 25px rgba(0, 240, 255, 0.2); box-sizing: border-box; }
-        .pos-header { font-size: 15px; font-weight: bold; letter-spacing: 1px; border-bottom: 2px dashed var(--cyber-pink); padding-bottom: 8px; display: flex; justify-content: space-between; color: var(--cyber-yellow); text-shadow: 0 0 5px var(--cyber-yellow); }
-        .pos-main-layout { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 15px; align-items: start; }
-        
-        /* 比例全面拉長：左側高度同步調高至 410px，與右邊大氣鍵盤完美齊平 */
-        .left-panel { display: flex; flex-direction: column; gap: 12px; height: 410px; box-sizing: border-box; justify-content: space-between; }
-        .right-panel { display: flex; flex-direction: column; gap: 12px; height: 410px; box-sizing: border-box; justify-content: space-between; }
-        .receipt-window { background: #000; border: 2px solid var(--cyber-pink); border-radius: 4px; height: 410px; overflow-y: auto; padding: 8px; box-shadow: inset 0 0 10px rgba(255, 0, 127, 0.15); box-sizing: border-box; }
-        
-        .receipt-table { width: 100%; border-collapse: collapse; font-size: 14px; font-weight: bold; }
-        .receipt-table th { background: var(--cyber-purple); color: var(--cyber-yellow); padding: 10px 8px; text-align: left; border: 1px solid var(--cyber-blue); text-shadow: 0 0 4px var(--cyber-yellow); }
-        .receipt-table td { padding: 10px 8px; border-bottom: 1px dashed rgba(0, 240, 255, 0.25); }
-        .row-in td { color: var(--neon-green) !important; text-shadow: 0 0 8px rgba(74,222,128,0.6); }
-        .row-out td { color: var(--neon-red) !important; text-shadow: 0 0 8px rgba(248,113,113,0.6); }
-        .ultimate-bottom-row { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 15px; margin-top: 15px; height: 54px; width: 100%; box-sizing: border-box; }
-        .bottom-flex-layout { display: grid; grid-template-columns: 25% 1fr; gap: 10px; height: 54px; box-sizing: border-box; }
-        .btn-safe-clear { background: transparent; color: var(--cyber-pink); border: 2px solid var(--cyber-pink); border-radius: 4px; font-size: 13px; font-weight: bold; cursor: pointer; text-shadow: 0 0 4px var(--cyber-pink); box-sizing: border-box; width: 100%; text-align: center; white-space: nowrap; height: 54px; }
-        .btn-safe-clear:active { background: var(--cyber-pink); color: #000; box-shadow: 0 0 15px var(--cyber-pink); }
-        .total-screen-box { background: #000; border: 2px solid var(--cyber-blue); border-radius: 4px; padding: 0 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 0 15px rgba(0, 240, 255, 0.3); height: 54px; box-sizing: border-box; }
-        .total-amount { font-size: 28px; font-weight: bold; color: var(--cyber-yellow); text-shadow: 0 0 8px var(--cyber-yellow); font-family: monospace; }
-        .function-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
-        .pos-btn { background: #000; color: var(--cyber-blue); border: 1px solid var(--cyber-blue); border-radius: 4px; padding: 12px 2px; font-size: 12px; font-weight: bold; cursor: pointer; text-shadow: 0 0 2px var(--cyber-blue); touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
-        .pos-btn:active { background: var(--cyber-blue); color: #000; box-shadow: 0 0 12px var(--cyber-blue); }
-        .btn-purple-preset { border-color: var(--cyber-pink); color: var(--cyber-pink); text-shadow: 0 0 2px var(--cyber-pink); }
-        .manual-input-box input { width: 100%; padding: 10px; font-size: 15px; border-radius: 4px; border: 1px solid var(--cyber-blue); background: #000; color: #fff; box-sizing: border-box; }
-        
-        /* 核心修復：高度從小數版的 236px 大幅加高至大氣版的 286px！按鈕格子變回飽滿長方形大方格 */
-        .keypad-table { width: 100%; height: 286px; border-collapse: separate; border-spacing: 8px; background: rgba(0,0,0,0.6); border-radius: 4px; border: 1px solid var(--cyber-purple); padding: 2px; box-sizing: border-box; }
-        .btn-key-td { background: #000; color: #fff; font-size: 20px; border: 1px solid rgba(0, 240, 255, 0.3); border-radius: 4px; text-align: center; cursor: pointer; font-weight: bold; width: 25%; }
-        .btn-key-td:active { border-color: var(--cyber-yellow); color: var(--cyber-yellow); text-shadow: 0 0 6px var(--cyber-yellow); }
-        .btn-clear-td { border-color: var(--cyber-pink); color: var(--cyber-pink); text-shadow: 0 0 4px var(--cyber-pink); }
-        .bottom-action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; height: 54px; box-sizing: border-box; width: 100%; }
-        .btn-action-in { background: transparent; border: 2px solid var(--cyber-blue); color: var(--cyber-blue); font-size: 14px; text-shadow: 0 0 4px var(--cyber-blue); font-weight: bold; height: 54px; cursor: pointer; width: 100%; box-sizing: border-box; }
-        .btn-action-out { background: transparent; border: 2px solid var(--cyber-pink); color: var(--cyber-pink); font-size: 14px; text-shadow: 0 0 4px var(--cyber-pink); font-weight: bold; height: 54px; cursor: pointer; width: 100%; box-sizing: border-box; }
+        /* 全域樣式：深色霓虹科技感 */
+        body {
+            background-color: #0d1117;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        /* 主容器：RWD寬度自動適應，最大480px保持精緻不變形 */
+        .pos-system {
+            width: 100%;
+            max-width: 480px;
+            padding: 15px;
+            box-sizing: border-box;
+            border: 2px solid #00ffff; 
+            border-radius: 10px;
+            background-color: #05070a;
+        }
+
+        /* 頂部資訊欄 */
+        .header-info {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        /* 快捷鍵網格 (2列4行) */
+        .shortcut-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .btn-shortcut {
+            background: transparent;
+            border: 2px dashed #00ffff;
+            color: #00ffff;
+            padding: 10px 2px;
+            border-radius: 5px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            transition: background 0.1s;
+        }
+        .btn-shortcut:active {
+            background: rgba(0, 255, 255, 0.2);
+        }
+        /* 桃紅色快捷鍵（下排） */
+        .btn-shortcut.pink {
+            border-color: #ff007f;
+            color: #ff007f;
+        }
+        .btn-shortcut.pink:active {
+            background: rgba(255, 0, 127, 0.2);
+        }
+
+        /* 輸入項目提示框 */
+        .input-item {
+            width: 100%;
+            background: transparent;
+            border: 1px solid #00ffff;
+            border-radius: 5px;
+            color: #ffffff;
+            padding: 10px;
+            font-size: 16px;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+        }
+
+        /* 數字顯示螢幕 */
+        .display-screen {
+            width: 100%;
+            border: 1px solid #00ffff;
+            border-radius: 5px;
+            padding: 10px;
+            color: #ffcc00;
+            font-size: 24px;
+            font-weight: bold;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+            text-align: left;
+            background: transparent;
+        }
+
+        /* 計算機鍵盤網格 (4x4) */
+        .keyboard-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .btn-key {
+            background: #0d1117;
+            border: 1px solid #22303c;
+            color: #fff;
+            font-size: 22px;
+            padding: 22px 0; /* 🟢 調整：從原本 15px 調高至 22px，讓數字鍵盤面板更高更舒適 */
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-key:active {
+            background: #22303c;
+        }
+        .btn-key.delete {
+            color: #ff007f;
+            border-color: #ff007f;
+            font-size: 16px;
+        }
+
+        /* 收入與支出區塊 */
+        .action-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .btn-action {
+            background: transparent;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 12px 0;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn-action.income {
+            border: 2px solid #00ffff;
+            color: #00ffff;
+        }
+        .btn-action.income:active {
+            background: rgba(0, 255, 255, 0.1);
+        }
+        .btn-action.expense {
+            border: 2px solid #ff007f;
+            color: #ff007f;
+        }
+        .btn-action.expense:active {
+            background: rgba(255, 0, 127, 0.1);
+        }
+
+        /* 清空紀錄與結餘欄位 */
+        .summary-row {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .btn-clear {
+            background: transparent;
+            border: 1px solid #ff007f;
+            color: #ff007f;
+            padding: 8px 12px;
+            font-size: 12px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .total-box {
+            border: 1px solid #00ffff;
+            border-radius: 5px;
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        /* 流水細明包裹層 */
+        .detail-wrapper {
+            width: 100%;
+            max-height: 280px;      
+            overflow-y: auto;       
+            border: 1px dashed #ff007f; 
+            box-sizing: border-box;
+            padding: 5px;
+        }
+
+        /* 流水帳表格樣式 */
+        .detail-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+        .detail-table th {
+            position: sticky;       
+            top: 0;
+            background-color: #05070a;
+            color: #ff007f;
+            padding: 8px 5px;
+            font-size: 14px;
+            border-bottom: 1px solid #ff007f;
+            z-index: 1;
+        }
+        .detail-table td {
+            padding: 8px 5px;
+            font-size: 14px;
+            border-bottom: 1px solid rgba(255, 0, 127, 0.1);
+        }
     </style>
 </head>
 <body>
-<div class="global-ads top-ads">[Google AdSense 廣告]</div>
-<div class="container">
-    <div class="pos-header"><span>--Yobi-收銀版記帳系統--</span><span id="pos-time">00:00:00</span></div>
-    <div class="pos-main-layout">
-        <div class="left-panel">
-            <div class="receipt-window"><table class="receipt-table"><thead><tr><th style="width:25%;">入帳時間</th><th style="width:50%;">項目細明</th><th style="width:25%;text-align:right;">金額</th></tr></thead><tbody id="receipt-body"></tbody></table></div>
+
+    <div class="pos-system">
+        
+        <!-- 頂部資訊 -->
+        <div class="header-info">
+            <!-- 🟢 修改：將系統標題文字顏色改為黃色 (#ffcc00) -->
+            <span style="color: #ffcc00;">Yobi - 記帳系統</span>
+            <span id="live-clock" style="color: #ffcc00;">00:00:00</span>
         </div>
-        <div class="right-panel">
-            <div class="function-grid">
-                <button class="pos-btn btn-blue-preset" id="btn-q" onclick="setPreset('飲食 🍛', 'out')">[Q] 飲食</button>
-                <button class="pos-btn btn-blue-preset" id="btn-w" onclick="setPreset('交通 🚌', 'out')">[W] 交通</button>
-                <button class="pos-btn btn-blue-preset" id="btn-e" onclick="setPreset('購物 👕', 'out')">[E] 購物</button>
-                <button class="pos-btn btn-blue-preset" id="btn-r" onclick="setPreset('娛樂 🎬', 'out')">[R] 娛樂</button>
-                <button class="pos-btn btn-purple-preset" id="btn-a" onclick="setPreset('網購 🛍️', 'out')">[A] 網購</button>
-                <button class="pos-btn btn-purple-preset" id="btn-s" onclick="setPreset('超市 🛒', 'out')">[S] 超市</button>
-                <button class="pos-btn btn-purple-preset" id="btn-d" onclick="setPreset('出糧 💰', 'in')">[D] 出糧</button>
-                <button class="pos-btn btn-purple-preset" id="btn-f" onclick="setPreset('外快 💸', 'in')">[F] 外快</button>
+
+        <!-- 快捷鍵按鈕區 -->
+        <div class="shortcut-grid">
+            <button class="btn-shortcut" onclick="selectShortcut('飲食🍛')">[Q] 飲食🍛</button>
+            <button class="btn-shortcut" onclick="selectShortcut('交通🚌')">[W] 交通🚌</button>
+            <button class="btn-shortcut" onclick="selectShortcut('購物👕')">[E] 購物👕</button>
+            <button class="btn-shortcut" onclick="selectShortcut('娛樂🎬')">[R] 娛樂🎬</button>
+            
+            <button class="btn-shortcut pink" onclick="selectShortcut('網購🛒')">[A] 網購🛒</button>
+            <button class="btn-shortcut pink" onclick="selectShortcut('超市🛒')">[S] 超市🛒</button>
+            <button class="btn-shortcut pink" onclick="selectShortcut('出糧💰')">[D] 出糧💰</button>
+            <button class="btn-shortcut pink" onclick="selectShortcut('外快💸')">[F] 外快💸</button>
+        </div>
+
+        <!-- 項目名稱輸入框 -->
+        <input type="text" id="item-input" class="input-item" placeholder="輸入項目...">
+
+        <!-- 數字螢幕 -->
+        <div id="display" class="display-screen">0.</div>
+
+        <!-- 計算機數字鍵盤 -->
+        <div class="keyboard-grid">
+            <button class="btn-key" onclick="inputNum('7')">7</button>
+            <button class="btn-key" onclick="inputNum('8')">8</button>
+            <button class="btn-key" onclick="inputNum('9')">9</button>
+            <button class="btn-key delete" onclick="backspace()">刪除</button>
+            
+            <button class="btn-key" onclick="inputNum('4')">4</button>
+            <button class="btn-key" onclick="inputNum('5')">5</button>
+            <button class="btn-key" onclick="inputNum('6')">6</button>
+            <button class="btn-key" onclick="inputDecimal()">.</button>
+            
+            <button class="btn-key" onclick="inputNum('1')">1</button>
+            <button class="btn-key" onclick="inputNum('2')">2</button>
+            <button class="btn-key" onclick="inputNum('3')">3</button>
+            <button class="btn-key" onclick="inputNum('0')">0</button>
+        </div>
+
+        <!-- 收入 / 支出 動作按鈕 -->
+        <div class="action-row">
+            <button class="btn-action income" onclick="recordTransaction('income')">收入 +</button>
+            <button class="btn-action expense" onclick="recordTransaction('expense')">支出 -</button>
+        </div>
+
+        <!-- 清空與總結餘 -->
+        <div class="summary-row">
+            <button class="btn-clear" onclick="clearAllLogs()">⚠️清空紀錄</button>
+            <div class="total-box">
+                <span style="color: #00ffff; font-size: 15px;">結餘 TOTAL:</span>
+                <span id="total-balance" style="color: #ffcc00; font-size: 20px;">$ 0.00</span>
             </div>
-            <div class="manual-input-box"><input type="text" id="item-desc" placeholder="輸入項目.."></div>
-            <div class="manual-input-box"><input type="text" id="item-amount" placeholder="0.00" style="font-size:18px;font-weight:bold;color:var(--cyber-yellow);text-shadow:0 0 5px var(--cyber-yellow);"></div>
-            <table class="keypad-table">
-                <tr><td class="btn-key-td" onclick="pressNum('7')">7</td><td class="btn-key-td" onclick="pressNum('8')">8</td><td class="btn-key-td" onclick="pressNum('9')">9</td><td class="btn-key-td btn-clear-td" onclick="pressClear()">刪除</td></tr>
-                <tr><td class="btn-key-td" onclick="pressNum('4')">4</td><td class="btn-key-td" onclick="pressNum('5')">5</td><td class="btn-key-td" onclick="pressNum('6')">6</td><td class="btn-key-td" onclick="pressDot()">.</td></tr>
-                <tr><td class="btn-key-td" onclick="pressNum('1')">1</td><td class="btn-key-td" onclick="pressNum('2')">2</td><td class="btn-key-td" onclick="pressNum('3')">3</td><td class="btn-key-td" onclick="pressNum('0')">0</td></tr>
+        </div>
+
+        <!-- 流水細明區 -->
+        <div class="detail-wrapper">
+            <table class="detail-table">
+                <thead>
+                    <tr>
+                        <th>入帳時間</th>
+                        <th>項目細明</th>
+                        <th style="text-align: right;">金  額</th>
+                    </tr>
+                </thead>
+                <tbody id="log-table-body">
+                    <!-- 紀錄會動態加進這裡 -->
+                </tbody>
             </table>
         </div>
+
     </div>
-    <div class="ultimate-bottom-row">
-        <div class="bottom-flex-layout">
-            <button class="btn-safe-clear" onclick="pressClearAll()">⚠️清空紀錄</button>
-            <div class="total-screen-box"><div style="font-size:14px;font-weight:bold;color:var(--cyber-blue);">結餘 TOTAL:</div><div class="total-amount" id="total-display">$ 0.00</div></div>
-        </div>
-        <div class="bottom-action-grid">
-            <button class="btn-action-in" id="btn-click-in" onclick="registerTransaction('in')">收入 (+)</button>
-            <button class="pos-btn btn-action-out" id="btn-click-out" onclick="registerTransaction('out')">支出 (-)</button>
-        </div>
-    </div>
-</div>
-<div class="global-ads bottom-ads">[Google AdSense 廣告]</div>
-<script>
-    let totalBalance = 0, audioCtx = null, currentActiveType = 'out';
-    setInterval(() => { const clock = document.getElementById('pos-time'); if(clock) clock.innerText = new Date().toLocaleTimeString([], {hour12: false}); }, 1000);
-    function initAudio() { try { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); } catch(e) {} }
-    function playBeep() { initAudio(); if (!audioCtx) return; try { const osc = audioCtx.createOscillator(), gain = audioCtx.createGain(); osc.type = 'sine'; osc.frequency.setValueAtTime(1300, audioCtx.currentTime); gain.gain.setValueAtTime(0.15, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05); osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.05); } catch(e) {} }
-    function playCashRegisterSound() { initAudio(); if (!audioCtx) return; try { const now = audioCtx.currentTime, osc1 = audioCtx.createOscillator(), gain1 = audioCtx.createGain(); osc1.type = 'sine'; osc1.frequency.setValueAtTime(1750, now); osc1.frequency.exponentialRampToValueAtTime(850, now + 0.18); gain1.gain.setValueAtTime(0.5, now); gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.4); osc1.connect(gain1); gain1.connect(audioCtx.destination); const bufferSize = audioCtx.sampleRate * 0.3, buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate), data = buffer.getChannelData(0); for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1; const noise = audioCtx.createBufferSource(); noise.buffer = buffer; const filter = audioCtx.createBiquadFilter(); filter.type = 'bandpass'; filter.frequency.value = 1000; const gain2 = audioCtx.createGain(); gain2.gain.setValueAtTime(0.3, now + 0.04); gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.28); noise.connect(filter); filter.connect(gain2); gain2.connect(audioCtx.destination); osc1.start(); osc1.stop(now + 0.4); noise.start(now + 0.04); noise.stop(now + 0.28); } catch(e) {} }
-    function setPreset(name, type) { initAudio(); playBeep(); document.getElementById('item-desc').value = name; currentActiveType = type; }
-    function pressNum(num) { initAudio(); playBeep(); document.getElementById('item-amount').value += num.toString(); }
-    function pressDot() { initAudio(); playBeep(); const input = document.getElementById('item-amount'); if (!input.value.toString().includes('.')) input.value = input.value.toString() === "" ? "0." : input.value.toString() + "."; }
-    function pressClear() { playBeep(); const input = document.getElementById('item-amount'); if (input.value.length > 0) input.value = input.value.slice(0, -1); }
-    function pressClearAll() { playBeep(); if(confirm("警告：即將清空當前所有流水帳紀錄，是否繼續？")) { totalBalance = 0; document.getElementById('total-display').innerText = `$ 0.00`; document.getElementById('receipt-body').innerHTML = ''; } }
-    function registerTransaction(forcedType) { initAudio(); const descInput = document.getElementById('item-desc'), amountInput = document.getElementById('item-amount'), amount = parseFloat(amountInput.value); if (isNaN(amount) || amount <= 0) { alert("錯誤：請輸入有效金額！"); return; } const finalType = forcedType || currentActiveType, desc = descInput.value.trim() || (finalType === 'in' ? "收入" : "支出"); playCashRegisterSound(); if (finalType === 'in') totalBalance += amount; else totalBalance -= amount; document.getElementById('total-display').innerText = `$ ${totalBalance.toFixed(2)}`; const receiptBody = document.getElementById('receipt-body'), row = document.createElement('tr'), timeStr = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit', hour12: false}), prefix = finalType === 'in' ? '+' : '-', typeClass = finalType === 'in' ? 'row-in' : 'row-out'; row.className = typeClass; row.innerHTML = `<td>${timeStr}</td><td>${desc}</td><td style="text-align:right;">${prefix}${amount.toFixed(2)}</td>`; receiptBody.insertBefore(row, receiptBody.firstChild); amountInput.value = ''; descInput.value = ''; currentActiveType = 'out'; }
-    document.addEventListener('keydown', (event) => {
-        if (document.activeElement === document.getElementById('item-desc')) return;
-        const key = event.key.toLowerCase();
-        if (['q','w','e','r','a','s','d','f'].includes(key)) { event.preventDefault(); document.getElementById('btn-' + key).click(); }
-        if (event.key === 'Backspace') { if (document.activeElement !== document.getElementById('item-amount')) { event.preventDefault(); pressClear(); } else playBeep(); }
-        if (event.key === '+') { event.preventDefault(); document.getElementById('btn-click-in').click(); }
-        if (event.key === 'Enter') { event.preventDefault(); document.getElementById('btn-click-out').click(); }
-        if (event.key === '.') { event.preventDefault(); pressDot(); }
-        if (/^[0-9]$/.test(event.key)) { if (document.activeElement !== document.getElementById('item-amount')) { event.preventDefault(); pressNum(event.key); } else playBeep(); }
-    });
-</script>
+    <!-- 🔊 音效合成系統與核心邏輯程式碼區 -->
+    <script>
+        let currentInput = "0.";
+        let totalSum = 0.00;
+
+        // 🔊 Web Audio API 聲音合成器
+        function playClickSound(freq, duration, vol) {
+            try {
+                let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                let oscillator = audioCtx.createOscillator();
+                let gainNode = audioCtx.createGain();
+                
+                oscillator.type = 'sine';
+                oscillator.frequency.value = freq; 
+                gainNode.gain.setValueAtTime(vol, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + duration);
+            } catch(e) { console.log("Audio Error"); }
+        }
+
+        function soundType() { playClickSound(600, 0.08, 0.4); } 
+        function soundAction() { playClickSound(880, 0.15, 0.5); } 
+
+        // 🕒 實時時鐘功能
+        function updateClock() {
+            let now = new Date();
+            let hrs = String(now.getHours()).padStart(2, '0');
+            let mins = String(now.getMinutes()).padStart(2, '0');
+            let secs = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('live-clock').innerText = `${hrs}:${mins}:${secs}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // 鍵盤輸入邏輯
+        function inputNum(num) {
+            soundType();
+            if (currentInput === "0.") {
+                currentInput = num;
+            } else {
+                currentInput += num;
+            }
+            document.getElementById('display').innerText = currentInput;
+        }
+
+        function inputDecimal() {
+            soundType();
+            if (!currentInput.includes('.')) {
+                currentInput += '.';
+            }
+            document.getElementById('display').innerText = currentInput;
+        }
+
+        function backspace() {
+            soundType();
+            if (currentInput.length > 1) {
+                currentInput = currentInput.slice(0, -1);
+                if (currentInput === "" || currentInput === "0") currentInput = "0.";
+            } else {
+                currentInput = "0.";
+            }
+            document.getElementById('display').innerText = currentInput;
+        }
+
+        function selectShortcut(name) {
+            soundType();
+            document.getElementById('item-input').value = name;
+        }
+
+        // 💰 核心記帳與動態流水帳生成邏輯
+        function recordTransaction(type) {
+            let amt = parseFloat(currentInput);
+            if (isNaN(amt) || amt === 0) return;
+            
+            let itemName = document.getElementById('item-input').value.trim();
+            if (itemName === "") itemName = (type === 'income' ? '收入' : '支出');
+
+            soundAction();
+
+            // 計算總結餘
+            let displayAmtStr = "";
+            if (type === 'expense') {
+                amt = -amt;
+                displayAmtStr = amt.toFixed(2); // 支出顯示：-123.00
+            } else {
+                displayAmtStr = "+" + amt.toFixed(2); // 🟢 修改：收入前面加上「+」符號，例如：+123.00
+            }
+            
+            totalSum += amt;
+            document.getElementById('total-balance').innerText = `$ ${totalSum.toFixed(2)}`;
+
+            // 🕒 取得入帳精確時間
+            let now = new Date();
+            let timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+
+            // 📝 插入完整的流水細明
+            let tbody = document.getElementById('log-table-body');
+            let row = document.createElement('tr');
+            
+            // 🟢 修改：如果是收入(income)，顏色轉為鮮綠色 (#00ff66)；支出(expense)維持紅色
+            let colorStyle = type === 'expense' ? 'color: #ff3333;' : 'color: #00ff66;';
+            
+            row.innerHTML = `
+                <td style="${colorStyle}">${timeStr}</td>
+                <td style="${colorStyle}">${itemName}</td>
+                <td style="${colorStyle} text-align: right;">${displayAmtStr}</td>
+            `;
+            
+            // 新紀錄放到最頂
+            tbody.insertBefore(row, tbody.firstChild);
+
+            // 還原輸入狀態
+            currentInput = "0.";
+            document.getElementById('display').innerText = currentInput;
+            document.getElementById('item-input').value = "";
+        }
+
+        function clearAllLogs() {
+            soundAction();
+            document.getElementById('log-table-body').innerHTML = "";
+            totalSum = 0.00;
+            document.getElementById('total-balance').innerText = `$ 0.00`;
+        }
+
+        // ⌨️ 電腦實體鍵盤綁定事件
+        document.addEventListener('keydown', function(e) {
+            if (document.activeElement === document.getElementById('item-input')) return; 
+            
+            if (e.key >= '0' && e.key <= '9') inputNum(e.key);
+            if (e.key === '.') inputDecimal();
+            if (e.key === 'Backspace') backspace();
+            if (e.key === '+') recordTransaction('income');
+            if (e.key === 'Enter' || e.key === '-') recordTransaction('expense');
+            
+            // 綁定快捷鍵字母
+            let keyUpper = e.key.toUpperCase();
+            if (keyUpper === 'Q') selectShortcut('飲食🍛');
+            if (keyUpper === 'W') selectShortcut('交通🚌');
+            if (keyUpper === 'E') selectShortcut('購物👕');
+            if (keyUpper === 'R') selectShortcut('娛樂🎬');
+            if (keyUpper === 'A') selectShortcut('網購🛒');
+            if (keyUpper === 'S') selectShortcut('超市🛒');
+            if (keyUpper === 'D') selectShortcut('出糧💰');
+            if (keyUpper === 'F') selectShortcut('外快💸');
+        });
+    </script>
 </body>
 </html>
-
