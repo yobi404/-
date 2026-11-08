@@ -2,153 +2,77 @@
 <html lang="zh-HK">
 <head>
     <meta charset="UTF-8">
-    <!-- 確保手機版不縮小，並直接禁止快速雙擊放大畫面 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Yobi - 記帳系統</title>
+    <title>Yobi-記帳系統</title>
     <style>
-        body {
-            background-color: #0d1117;
-            color: #fff;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            touch-action: manipulation;
-        }
-
-        /* 網頁主外框（預留給未來網頁版廣告排版並居中） */
-        .page-wrapper {
-            width: 100%;
-            max-width: 480px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        /* 廣告專用容器：預留空間給未來的 Google AdSense */
-        .ad-container {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px dashed #334155;
-            border-radius: 8px;
-            text-align: center;
-            padding: 12px 0;
-            color: #64748b;
-            font-size: 12px;
-            min-height: 50px;
-            box-sizing: border-box;
-        }
-
-        /* 記帳系統主機身 */
-        .pos-system {
-            width: 100%;
-            padding: 15px;
-            box-sizing: border-box;
-            border: 2px solid #00ffff; 
-            border-radius: 10px;
-            background-color: #05070a;
-        }
-
-        .header-info { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 15px; font-size: 16px; }
-        .shortcut-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px; }
+        body { background-color: #0d1117; color: #fff; font-family: Arial, sans-serif; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; touch-action: manipulation; }
+        .page-wrapper { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 15px; }
+        .ad-container { width: 100%; background: rgba(255, 255, 255, 0.03); border: 1px dashed #334155; border-radius: 8px; text-align: center; padding: 12px 0; color: #64748b; font-size: 12px; min-height: 50px; box-sizing: border-box; }
+        .pos-system { width: 100%; padding: 15px; box-sizing: border-box; border: 2px solid #00ffff; border-radius: 10px; background-color: #05070a; }
+        .header-info { display: flex; justify-content: space-between; align-items: center; font-weight: bold; margin-bottom: 15px; font-size: 15px; }
         
-        .btn-shortcut {
-            background: transparent; border: 2px dashed #00ffff; color: #00ffff; padding: 10px 2px; border-radius: 5px;
-            font-size: 13px; font-weight: bold; cursor: pointer; text-align: center; transition: background 0.1s; touch-action: manipulation;
+        .btn-export {
+            background: linear-gradient(135deg, #ff8da1, #ff007f); color: #ffffff; border: 1px solid #ff8da1; 
+            padding: 6px 16px; font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; 
+            box-shadow: 0 0 8px rgba(255, 0, 127, 0.4); transition: all 0.1s ease; outline: none;
         }
+        .btn-export:active { background: linear-gradient(135deg, #ff007f, #cc0066); box-shadow: 0 0 2px rgba(255, 0, 127, 0.2); }
+        .btn-export:focus { outline: none; }
+
+        .shortcut-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px; }
+        .btn-shortcut { background: transparent; border: 2px dashed #00ffff; color: #00ffff; padding: 10px 2px; border-radius: 5px; font-size: 13px; font-weight: bold; cursor: pointer; text-align: center; transition: background 0.1s; touch-action: manipulation; }
         .btn-shortcut:active { background: rgba(0, 255, 255, 0.2); }
         .btn-shortcut.pink { border-color: #ff007f; color: #ff007f; }
         .btn-shortcut.pink:active { background: rgba(255, 0, 127, 0.2); }
-
         .input-item { width: 100%; background: transparent; border: 1px solid #00ffff; border-radius: 5px; color: #ffffff; padding: 10px; font-size: 16px; box-sizing: border-box; margin-bottom: 15px; }
         .display-screen { width: 100%; border: 1px solid #00ffff; border-radius: 5px; padding: 10px; color: #ffcc00; font-size: 24px; font-weight: bold; box-sizing: border-box; margin-bottom: 15px; text-align: left; background: transparent; }
-        
-        /* 舒適的手機高按鍵數字鍵盤 */
         .keyboard-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px; }
         .btn-key { background: #0d1117; border: 1px solid #22303c; color: #fff; font-size: 20px; padding: 22px 0; border-radius: 5px; cursor: pointer; font-weight: bold; touch-action: none; }
         .btn-key:active { background: #22303c; }
         .btn-key.delete { color: #ff007f; border-color: #ff007f; font-size: 16px; }
-
         .action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
         .btn-action { background: transparent; font-size: 16px; font-weight: bold; padding: 12px 0; border-radius: 5px; cursor: pointer; touch-action: manipulation; }
         .btn-action.income { border: 2px solid #00ffff; color: #00ffff; }
         .btn-action.income:active { background: rgba(0, 255, 255, 0.1); }
         .btn-action.expense { border: 2px solid #ff007f; color: #ff007f; }
         .btn-action.expense:active { background: rgba(255, 0, 127, 0.1); }
-
         .summary-row { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: center; margin-bottom: 15px; }
         .btn-clear { background: transparent; border: 1px solid #ff007f; color: #ff007f; padding: 8px 12px; font-size: 12px; border-radius: 3px; cursor: pointer; touch-action: manipulation; }
         .total-box { border: 1px solid #00ffff; border-radius: 5px; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
-
-        /* 流水帳獨立內滾動區域 */
-        .detail-wrapper { 
-            width: 100%; 
-            max-height: 418px; 
-            overflow-y: auto; 
-            border: 1px dashed #ff007f; 
-            box-sizing: border-box; 
-            padding: 0; /* 🟢 核心修復：從 5px 改為 0，拔掉空隙，阻止任何字體突出去 */
-        }
-        .detail-table { 
-            width: 100%; 
-            border-collapse: separate; /* 🟢 核心修復：從 collapse 改為 separate，確保底部線不消失 */
-            border-spacing: 0;         /* 保持表格緊湊 */
-            text-align: left; 
-        }
-        /* 🟢 核心修復：完全貼緊邊緣並強制壓在最頂端，100% 擋死所有溢出的字體 */
-        .detail-table th { 
-            position: sticky; 
-            top: 0; 
-            background-color: #05070a; /* 完全遮擋下方捲上來的字體 */
-            color: #ff007f; 
-            padding: 10px 5px; /* 微調上下間距更好看 */
-            font-size: 14px; 
-            border-bottom: 2px solid #ff007f; /* 🟢 核心修復：加粗為 2px，滾動時線條絕對不消失 */
-            z-index: 10; 
-        }
-        .detail-table td { 
-            padding: 8px 5px; 
-            font-size: 14px; 
-            border-bottom: 1px solid rgba(255, 0, 127, 0.1); 
-        }
         
-        /* 選取項目時的黃色粗框與手勢設定 */
-        .detail-table tr.selected-row { 
-            outline: 3px solid #ffcc00; 
-            background-color: rgba(255, 204, 0, 0.1); 
-            cursor: pointer; 
-        }
-        .detail-table tbody tr { 
-            cursor: pointer; 
-            -webkit-user-select: none; 
-            user-select: none; 
-        }
+        .detail-wrapper { width: 100%; max-height: 418px; overflow-y: auto; border: 1px dashed #ff007f; box-sizing: border-box; padding: 0; }
+        .detail-table { width: 100%; border-collapse: separate; border-spacing: 0; text-align: left; }
+        .detail-table th { position: sticky; top: 0; background-color: #05070a; color: #ff007f; padding: 10px 5px; font-size: 14px; border-bottom: 2px solid #ff007f; z-index: 10; }
+        /* 🟢 修改：將 td 加上 line-height: 1.4，讓上下的日期與時間有舒適的間距 */
+        .detail-table td { padding: 8px 5px; font-size: 14px; line-height: 1.4; border-bottom: 1px solid rgba(255, 0, 127, 0.1); vertical-align: middle; }
 
-
-        /* 選取項目時的黃色粗框 */
         .detail-table tr.selected-row { outline: 3px solid #ffcc00; background-color: rgba(255, 204, 0, 0.1); cursor: pointer; }
         .detail-table tbody tr { cursor: pointer; -webkit-user-select: none; user-select: none; }
+
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.75); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-box { background: #05070a; border: 2px solid #ff007f; border-radius: 12px; width: 85%; max-width: 360px; padding: 20px; box-sizing: border-box; box-shadow: 0 0 15px rgba(255, 0, 127, 0.5); text-align: center; }
+        .modal-title { font-size: 15px; font-weight: bold; color: #ffcc00; margin-bottom: 20px; text-align: left; line-height: 1.5; }
+        .modal-sub-detail { font-size: 14px; color: #ff3333; margin: 15px 0; background: rgba(255, 51, 51, 0.08); padding: 10px; border-radius: 6px; border: 1px dashed rgba(255, 51, 51, 0.3); text-align: left; }
+        .modal-options-wrapper { display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px; }
+        .opt-btn { background: #0d1117; border: 1px solid #22303c; color: #fff; padding: 14px; font-size: 15px; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.1s; }
+        .opt-btn.selected { border: 2px solid #ff007f; outline: 1px solid #ff007f; background: rgba(255, 0, 127, 0.1); }
+        .modal-action-row { display: flex; justify-content: flex-end; gap: 12px; }
+        .modal-btn { padding: 8px 18px; font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; border: none; }
+        .modal-btn.confirm { background: #8a2be2; color: #fff; } 
+        .modal-btn.confirm:active { background: #6a1b9a; }
+        .modal-btn.cancel { background: #ffccd5; color: #c71585; } 
+        .modal-btn.cancel:active { background: #ffb3c1; }
     </style>
 </head>
 <body>
-
     <div class="page-wrapper">
-        
-        <!-- 頂部廣告預留區 -->
-        <div class="ad-container">
-            <span>【贊助商廣告】</span>
-        </div>
-
-        <!-- 記帳主機身 -->
+        <div class="ad-container"><span>【贊助商廣告】</span></div>
         <div class="pos-system">
             <div class="header-info">
                 <span style="color: #ffcc00;">Yobi - 記帳系統</span>
+                <button id="export-trigger" class="btn-export" onclick="triggerExportMenu(event)">匯出所有記錄</button>
                 <span id="live-clock" style="color: #ffcc00;">00:00:00</span>
             </div>
-
             <div class="shortcut-grid">
                 <button class="btn-shortcut" onclick="selectShortcut('飲食 🍔')">[Q] 飲食 🍔</button>
                 <button class="btn-shortcut" onclick="selectShortcut('交通 🚌')">[W] 交通 🚌</button>
@@ -159,10 +83,8 @@
                 <button class="btn-shortcut pink" onclick="selectShortcut('出糧 💰')">[D] 出糧 💰</button>
                 <button class="btn-shortcut pink" onclick="selectShortcut('外快 💰')">[F] 外快 💰</button>
             </div>
-
             <input type="text" id="item-input" class="input-item" placeholder="輸入項目...">
-            <div id="display" class="display-screen">0.</div>
-
+            <div id="display" class="display-screen">0</div>
             <div class="keyboard-grid">
                 <button class="btn-key" onclick="inputNum('7')">7</button>
                 <button class="btn-key" onclick="inputNum('8')">8</button>
@@ -177,44 +99,69 @@
                 <button class="btn-key" onclick="inputNum('3')">3</button>
                 <button class="btn-key" onclick="inputNum('0')">0</button>
             </div>
-
-            <!-- 100% 正確的動作觸發函數（已排除任何語法錯誤） -->
             <div class="action-row">
                 <button class="btn-action income" onclick="recordTransaction('income')">💰 收入 +</button>
                 <button class="btn-action expense" onclick="recordTransaction('expense')">💸 支出 Enter</button>
             </div>
-
             <div class="summary-row">
-                <button class="btn-clear" onclick="clearAllLogs()">⚠️清空紀錄⚠️</button>
+                <button class="btn-clear" onclick="triggerClearMenu()">⚠️清空紀錄⚠️</button>
                 <div class="total-box">
-                    <span style="color: #00ffff; font-size: 15px;">結餘 TOTAL:</span>
+                    <span style="color: #00ffff; font-size: 14px;">結餘 Total:</span>
                     <span id="total-balance" style="color: #ffcc00; font-size: 20px;">$ 0.00</span>
                 </div>
             </div>
-
             <div class="detail-wrapper">
                 <table class="detail-table">
-                    <thead>
-                        <tr><th>入帳時間</th><th>項目細明</th><th style="text-align: right;">金   額</th></tr>
-                    </thead>
+                    <thead><tr><th>入帳時間</th><th>項目細明</th><th style="text-align: right;">金額</th></tr></thead>
                     <tbody id="log-table-body"></tbody>
                 </table>
             </div>
         </div>
-
-        <!-- 底部廣告預留區 -->
-        <div class="ad-container">
-            <span>【贊助商廣告】</span>
-        </div>
-
+        <div class="ad-container"><span>【贊助商廣告】</span></div>
     </div>
-    <script>
-        let currentInput = "0.";
-        let totalSum = 0.00;
-        let transactionLogs = []; 
-        let selectedIndex = null; 
 
-        // 🔊 音效合成系統
+    <!-- 1️⃣ 輸出對話框 -->
+    <div id="exportModal" class="modal-overlay">
+        <div class="modal-box">
+
+            <div class="modal-options-wrapper">
+                <button id="opt-copy" class="opt-btn" onclick="selectExportOption(1)">複製 COPY</button>
+                <button id="opt-excel" class="opt-btn" onclick="selectExportOption(2)">匯出 Excel</button>
+            </div>
+            <div class="modal-action-row">
+                <button class="modal-btn confirm" onclick="confirmExport()">確定</button>
+                <button class="modal-btn cancel" onclick="closeExportMenu()">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2️⃣ 清空對話框 -->
+    <div id="clearModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-title" style="font-size:18px; color: #ff3333;">確定清空所有紀錄嗎？<br><span style="font-size:12px; color:#888;">(此操作無法復原)</span></div>
+            <div class="modal-action-row">
+                <button class="modal-btn confirm" onclick="confirmClearAll()">確定</button>
+                <button class="modal-btn cancel" onclick="closeClearMenu()">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3️⃣ 單筆刪除對話框 -->
+    <div id="deleteModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-title">確定刪除這筆紀錄嗎？</div>
+            <div id="delete-target-info" class="modal-sub-detail"></div>
+            <div class="modal-action-row">
+                <button class="modal-btn confirm" onclick="confirmDeleteLog()">確定</button>
+                <button class="modal-btn cancel" onclick="closeDeleteMenu()">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentInput = "0"; let totalSum = 0.00; let transactionLogs = []; let selectedIndex = null;
+        let chosenExportMode = null; 
+
         function playClickSound(freq, duration, vol) {
             try {
                 let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -227,86 +174,158 @@
         }
         function soundType() { playClickSound(600, 0.08, 0.4); } 
         function soundAction() { playClickSound(880, 0.15, 0.5); } 
+        
+function updateClock() {
+    let now = new Date();
+    let dateStr = `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')}`;
+    let timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+    
+    // 🟢 這裡把原本的 innerText 改成 innerHTML，這樣就能完美呈現上下兩行的日期與時間
+    document.getElementById('live-clock').innerHTML = `<div style="color: #00ffff; font-size: 12px; margin-bottom: 2px;">${dateStr}</div><div style="color: #ffcc00; font-size: 14px;">${timeStr}</div>`;
+}
 
-        function updateClock() {
-            let now = new Date();
-            document.getElementById('live-clock').innerText = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
-        }
         setInterval(updateClock, 1000); updateClock();
 
-        // 網頁載入時自動加載屬於該裝置瀏覽器的本地快取
         window.onload = function() {
-            let savedLogs = localStorage.getItem('yobi_logs');
+            let savedLogs = localStorage.getItem('Yobi_logs');
             if (savedLogs) { transactionLogs = JSON.parse(savedLogs); renderLogs(); }
-            let savedSum = localStorage.getItem('yobi_totalSum');
+            let savedSum = localStorage.getItem('Yobi_totalSum');
             if (savedSum) { totalSum = parseFloat(savedSum); document.getElementById('total-balance').innerText = `$ ${totalSum.toFixed(2)}`; }
         };
 
-        // 渲染流水明細，無密碼單擊黃框、手機長按、電腦Delete鍵
+        // 🟢 核心修改：渲染時將「日期」以 <div style="font-size:12px;"> 排在「時間」的上方
         function renderLogs() {
             let tbody = document.getElementById('log-table-body'); tbody.innerHTML = ""; 
             transactionLogs.forEach((log, index) => {
                 let row = document.createElement('tr'); let colorStyle = log.type === 'expense' ? 'color: #ff3333;' : 'color: #00ff66;';
                 if (selectedIndex === index) { row.className = "selected-row"; }
-                row.innerHTML = `<td style="${colorStyle}">${log.time}</td><td style="${colorStyle}">${log.name}</td><td style="${colorStyle} text-align: right;">${log.amtStr}</td>`;
+                
+                // 這裡會檢查有沒有舊格式資料（如果以前沒錄到日期，就自動顯示當前日期補救）
+                let displayDate = log.date ? log.date : `${new Date().getFullYear()}/${String(new Date().getMonth()+1).padStart(2,'0')}/${String(new Date().getDate()).padStart(2,'0')}`;
+
+                row.innerHTML = `
+                    <td style="${colorStyle}">
+                        <div style="font-size: 12px; opacity: 0.8;">${displayDate}</div>
+                        <div>${log.time}</div>
+                    </td>
+                    <td style="${colorStyle}">${log.name}</td>
+                    <td style="${colorStyle} text-align: right;">${log.amtStr}</td>
+                `;
                 
                 row.addEventListener('click', function(e) { soundType(); selectedIndex = (selectedIndex === index) ? null : index; renderLogs(); });
                 
                 let pressTimer;
-                row.addEventListener('touchstart', function(e) { pressTimer = window.setTimeout(function() { soundAction(); selectedIndex = index; renderLogs(); deleteSelectedLog(); }, 800); });
+                row.addEventListener('touchstart', function(e) { pressTimer = window.setTimeout(function() { soundAction(); selectedIndex = index; renderLogs(); triggerDeleteMenu(); }, 800); });
                 row.addEventListener('touchend', function(e) { clearTimeout(pressTimer); });
                 row.addEventListener('touchmove', function(e) { clearTimeout(pressTimer); });
                 tbody.appendChild(row);
             });
         }
 
-        // 刪除選定項目
-        function deleteSelectedLog() {
-            if (selectedIndex === null) return;
-            let targetLog = transactionLogs[selectedIndex];
-            if (confirm(`確定刪除？\n【${targetLog.time} - ${targetLog.name} : ${targetLog.amtStr}】`)) {
-                soundAction(); let rawAmt = parseFloat(targetLog.amtStr.replace('+', '')); totalSum -= rawAmt;
-                document.getElementById('total-balance').innerText = `$ ${totalSum.toFixed(2)}`;
-                transactionLogs.splice(selectedIndex, 1); selectedIndex = null;
-                localStorage.setItem('yobi_logs', JSON.stringify(transactionLogs)); localStorage.setItem('yobi_totalSum', totalSum.toString());
-                renderLogs();
-            }
+
+        function triggerExportMenu(event) {
+            if (event) event.preventDefault();
+            document.getElementById('export-trigger').blur(); 
+            if (transactionLogs.length === 0) { alert("目前沒有記錄，無法匯出！"); return; }
+            soundAction(); chosenExportMode = null;
+            document.getElementById('opt-copy').className = "opt-btn";
+            document.getElementById('opt-excel').className = "opt-btn";
+            document.getElementById('exportModal').style.display = "flex";
         }
 
-        function inputNum(num) { soundType(); currentInput = currentInput === "0." ? num : currentInput + num; document.getElementById('display').innerText = currentInput; }
+        function selectExportOption(mode) {
+            soundType(); chosenExportMode = mode;
+            document.getElementById('opt-copy').className = mode === 1 ? "opt-btn selected" : "opt-btn";
+            document.getElementById('opt-excel').className = mode === 2 ? "opt-btn selected" : "opt-btn";
+        }
+
+function confirmExport() {
+    if (chosenExportMode === null) { alert("請先點選其中一個選項！"); return; }
+    soundAction();
+    
+    if (chosenExportMode === 1) {
+        // 📋 1. 複製功能：在文字串接中加入日期欄位，並對齊排版
+        let textResult = "--- Yobi-記帳系統-流水細明 ---\n日期\t時間\t項目\t金額\n";
+        transactionLogs.forEach(log => {
+            let d = log.date ? log.date : "2026/11/09";
+            textResult += `${d}\t${log.time}\t${log.name}\t${log.amtStr}\n`;
+        });
+        textResult += `-----------------------\n目前總結餘: ${document.getElementById('total-balance').innerText}`;
+        navigator.clipboard.writeText(textResult).then(() => { closeExportMenu(); });
+        
+    } else if (chosenExportMode === 2) {
+        // 📊 2. Excel 匯出功能：CSV 欄位新增「日期」欄，讓試算表完美對齊不亂碼
+        let csvContent = "\uFEFF日期,時間,項目,金額\n"; 
+        transactionLogs.forEach(log => {
+            let d = log.date ? log.date : "2026/11/09";
+            csvContent += `"${d}","${log.time}","${log.name}","${log.amtStr}"\n`;
+        });
+        let blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        let link = document.createElement("a"); 
+        link.setAttribute("href", URL.createObjectURL(blob));
+        link.setAttribute("download", `Yobi_帳目匯出_${new Date().toISOString().slice(0,10)}.csv`);
+        document.body.appendChild(link); 
+        link.click(); 
+        document.body.removeChild(link);
+        closeExportMenu();
+    }
+}
+
+        function closeExportMenu() { soundType(); document.getElementById('exportModal').style.display = "none"; }
+
+        function triggerClearMenu() { soundAction(); document.getElementById('clearModal').style.display = "flex"; }
+        function confirmClearAll() {
+            soundAction(); transactionLogs = []; totalSum = 0.00; selectedIndex = null;
+            localStorage.removeItem('yobi_logs'); localStorage.removeItem('yobi_totalSum');
+            document.getElementById('log-table-body').innerHTML = ""; document.getElementById('total-balance').innerText = `$ 0.00`;
+            closeClearMenu();
+        }
+        function closeClearMenu() { soundType(); document.getElementById('clearModal').style.display = "none"; }
+
+        function triggerDeleteMenu() {
+            if (selectedIndex === null) return;
+            let targetLog = transactionLogs[selectedIndex];
+            document.getElementById('delete-target-info').innerHTML = `時間：${targetLog.time}<br>項目：${targetLog.name}<br>金額：${targetLog.amtStr}`;
+            document.getElementById('deleteModal').style.display = "flex";
+        }
+        function confirmDeleteLog() {
+            if (selectedIndex === null) return;
+            soundAction();
+            let targetLog = transactionLogs[selectedIndex];
+            let rawAmt = parseFloat(targetLog.amtStr.replace('+', '')); totalSum -= rawAmt;
+            document.getElementById('total-balance').innerText = `$ ${totalSum.toFixed(2)}`;
+            transactionLogs.splice(selectedIndex, 1); selectedIndex = null;
+            localStorage.setItem('yobi_logs', JSON.stringify(transactionLogs)); localStorage.setItem('yobi_totalSum', totalSum.toString());
+            renderLogs(); closeDeleteMenu();
+        }
+        function closeDeleteMenu() { soundType(); document.getElementById('deleteModal').style.display = "none"; }
+
+        function inputNum(num) { soundType(); currentInput = currentInput === "0" ? num : currentInput + num; document.getElementById('display').innerText = currentInput; }
         function inputDecimal() { soundType(); if (!currentInput.includes('.')) currentInput += '.'; document.getElementById('display').innerText = currentInput; }
-        function backspace() { soundType(); currentInput = currentInput.length > 1 ? currentInput.slice(0, -1) : "0."; if (currentInput === "" || currentInput === "0") currentInput = "0."; document.getElementById('display').innerText = currentInput; }
+        function backspace() { soundType(); currentInput = currentInput.length > 1 ? currentInput.slice(0, -1) : "0"; if (currentInput === "" || currentInput === "-") currentInput = "0"; document.getElementById('display').innerText = currentInput; }
         function selectShortcut(name) { soundType(); document.getElementById('item-input').value = name; }
         
-        // 核心入帳
         function recordTransaction(type) {
             let amt = parseFloat(currentInput); if (isNaN(amt) || amt === 0) return;
             let itemName = document.getElementById('item-input').value.trim() || (type === 'income' ? '收入 💰' : '支出 💸'); soundAction();
-            
             let displayAmtStr = type === 'expense' ? (-amt).toFixed(2) : "+" + amt.toFixed(2);
             totalSum += (type === 'expense' ? -amt : amt); document.getElementById('total-balance').innerText = `$ ${totalSum.toFixed(2)}`;
-            
-            let now = new Date(); 
-            let timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+            let now = new Date(); let timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
             let newLog = { time: timeStr, name: itemName, amtStr: displayAmtStr, type: type }; transactionLogs.unshift(newLog);
-            
             localStorage.setItem('yobi_logs', JSON.stringify(transactionLogs)); localStorage.setItem('yobi_totalSum', totalSum.toString());
             selectedIndex = null; renderLogs();
-            currentInput = "0."; document.getElementById('display').innerText = currentInput; document.getElementById('item-input').value = "";
+            currentInput = "0"; document.getElementById('display').innerText = currentInput; document.getElementById('item-input').value = "";
         }
 
-        function clearAllLogs() {
-            if(confirm("確定要清空所有紀錄嗎？")) {
-                soundAction(); transactionLogs = []; totalSum = 0.00; selectedIndex = null;
-                localStorage.removeItem('yobi_logs'); localStorage.removeItem('yobi_totalSum');
-                document.getElementById('log-table-body').innerHTML = ""; document.getElementById('total-balance').innerText = `$ 0.00`;
-            }
-        }
-
-        // 實體鍵盤事件
         document.addEventListener('keydown', function(e) { 
+            if (document.getElementById('exportModal').style.display === "flex" || 
+                document.getElementById('clearModal').style.display === "flex" || 
+                document.getElementById('deleteModal').style.display === "flex") {
+                if (e.key === 'Escape') { closeExportMenu(); closeClearMenu(); closeDeleteMenu(); }
+                return;
+            }
             if (document.activeElement === document.getElementById('item-input')) return; 
-            if (e.key === 'Delete' && selectedIndex !== null) { deleteSelectedLog(); return; } 
+            if (e.key === 'Delete' && selectedIndex !== null) { triggerDeleteMenu(); return; } 
             if (e.key >= '0' && e.key <= '9') inputNum(e.key); 
             if (e.key === '.') inputDecimal(); if (e.key === 'Backspace') backspace(); 
             if (e.key === '+') recordTransaction('income'); if (e.key === 'Enter' || e.key === '-') recordTransaction('expense'); 
