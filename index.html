@@ -187,9 +187,9 @@ function updateClock() {
         setInterval(updateClock, 1000); updateClock();
 
         window.onload = function() {
-            let savedLogs = localStorage.getItem('Yobi_logs');
+            let savedLogs = localStorage.getItem('yobi_logs');
             if (savedLogs) { transactionLogs = JSON.parse(savedLogs); renderLogs(); }
-            let savedSum = localStorage.getItem('Yobi_totalSum');
+            let savedSum = localStorage.getItem('yobi_totalSum');
             if (savedSum) { totalSum = parseFloat(savedSum); document.getElementById('total-balance').innerText = `$ ${totalSum.toFixed(2)}`; }
         };
 
