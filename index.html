@@ -2,8 +2,8 @@
 <html lang="zh-HK">
 <head>
     <meta charset="UTF-8">
-    <!-- 關鍵：防止手機瀏覽器強行縮小網頁，確保按鍵夠大好點擊 -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 🟢 修改：補上 user-scalable=no 參數，直接從瀏覽器核心禁止手勢縮放 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Yobi-收銀版記帳系統</title>
     <style>
         /* 全域樣式：深色霓虹科技感 */
@@ -16,6 +16,8 @@
             display: flex;
             justify-content: center;
             align-items: flex-start;
+            /* 🟢 修改：禁止整個網頁頁面的雙擊放大預設行為 */
+            touch-action: manipulation;
         }
 
         /* 主容器：RWD寬度自動適應，最大480px保持精緻不變形 */
@@ -56,6 +58,8 @@
             cursor: pointer;
             text-align: center;
             transition: background 0.1s;
+            /* 🟢 修改：確保按鈕點擊時反應靈敏且不放大 */
+            touch-action: manipulation;
         }
         .btn-shortcut:active {
             background: rgba(0, 255, 255, 0.2);
@@ -89,7 +93,7 @@
             border-radius: 5px;
             padding: 10px;
             color: #ffcc00;
-            font-size: 24px;
+            font-size: 25px;
             font-weight: bold;
             box-sizing: border-box;
             margin-bottom: 15px;
@@ -108,11 +112,13 @@
             background: #0d1117;
             border: 1px solid #22303c;
             color: #fff;
-            font-size: 22px;
-            padding: 22px 0; /* 🟢 調整：從原本 15px 調高至 22px，讓數字鍵盤面板更高更舒適 */
+            font-size: 20px;
+            padding: 22px 0; 
             border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
+            /* 🟢 修改：特別針對鍵盤按鍵，消除雙擊延遲與放大問題 */
+            touch-action: none;
         }
         .btn-key:active {
             background: #22303c;
@@ -137,6 +143,7 @@
             padding: 12px 0;
             border-radius: 5px;
             cursor: pointer;
+            touch-action: manipulation;
         }
         .btn-action.income {
             border: 2px solid #00ffff;
@@ -166,9 +173,10 @@
             border: 1px solid #ff007f;
             color: #ff007f;
             padding: 8px 12px;
-            font-size: 12px;
+            font-size: 14px;
             border-radius: 3px;
             cursor: pointer;
+            touch-action: manipulation;
         }
         .total-box {
             border: 1px solid #00ffff;
@@ -219,26 +227,25 @@
         
         <!-- 頂部資訊 -->
         <div class="header-info">
-            <!-- 🟢 修改：將系統標題文字顏色改為黃色 (#ffcc00) -->
-            <span style="color: #ffcc00;">Yobi - 記帳系統</span>
+            <span style="color: #ffcc00;">--Yobi - 記帳系統--</span>
             <span id="live-clock" style="color: #ffcc00;">00:00:00</span>
         </div>
 
         <!-- 快捷鍵按鈕區 -->
         <div class="shortcut-grid">
-            <button class="btn-shortcut" onclick="selectShortcut('飲食🍛')">[Q] 飲食🍛</button>
-            <button class="btn-shortcut" onclick="selectShortcut('交通🚌')">[W] 交通🚌</button>
-            <button class="btn-shortcut" onclick="selectShortcut('購物👕')">[E] 購物👕</button>
-            <button class="btn-shortcut" onclick="selectShortcut('娛樂🎬')">[R] 娛樂🎬</button>
+            <button class="btn-shortcut" onclick="selectShortcut('飲食 🍔')">[Q] 飲食 🍔</button>
+            <button class="btn-shortcut" onclick="selectShortcut('交通 🚌')">[W] 交通 🚌</button>
+            <button class="btn-shortcut" onclick="selectShortcut('購物 🎁')">[E] 購物 🎁</button>
+            <button class="btn-shortcut" onclick="selectShortcut('娛樂 🎬')">[R] 娛樂 🎬</button>
             
-            <button class="btn-shortcut pink" onclick="selectShortcut('網購🛒')">[A] 網購🛒</button>
-            <button class="btn-shortcut pink" onclick="selectShortcut('超市🛒')">[S] 超市🛒</button>
-            <button class="btn-shortcut pink" onclick="selectShortcut('出糧💰')">[D] 出糧💰</button>
-            <button class="btn-shortcut pink" onclick="selectShortcut('外快💸')">[F] 外快💸</button>
+            <button class="btn-shortcut pink" onclick="selectShortcut('網購 🛒')">[A] 網購 🛒</button>
+            <button class="btn-shortcut pink" onclick="selectShortcut('超市 🛒')">[S] 超市 🛒</button>
+            <button class="btn-shortcut pink" onclick="selectShortcut('出糧 💰')">[D] 出糧 💰</button>
+            <button class="btn-shortcut pink" onclick="selectShortcut('外快 💸')">[F] 外快 💸</button>
         </div>
 
         <!-- 項目名稱輸入框 -->
-        <input type="text" id="item-input" class="input-item" placeholder="輸入項目...">
+        <input type="text" id="item-input" class="input-item" placeholder="輸入項目..">
 
         <!-- 數字螢幕 -->
         <div id="display" class="display-screen">0.</div>
@@ -271,7 +278,7 @@
         <div class="summary-row">
             <button class="btn-clear" onclick="clearAllLogs()">⚠️清空紀錄</button>
             <div class="total-box">
-                <span style="color: #00ffff; font-size: 15px;">結餘 TOTAL:</span>
+                <span style="color: #00ffff; font-size: 14px;">結餘 TOTAL:</span>
                 <span id="total-balance" style="color: #ffcc00; font-size: 20px;">$ 0.00</span>
             </div>
         </div>
@@ -283,7 +290,7 @@
                     <tr>
                         <th>入帳時間</th>
                         <th>項目細明</th>
-                        <th style="text-align: right;">金  額</th>
+                        <th style="text-align: right;">金   額</th>
                     </tr>
                 </thead>
                 <tbody id="log-table-body">
@@ -293,6 +300,7 @@
         </div>
 
     </div>
+
     <!-- 🔊 音效合成系統與核心邏輯程式碼區 -->
     <script>
         let currentInput = "0.";
@@ -380,9 +388,9 @@
             let displayAmtStr = "";
             if (type === 'expense') {
                 amt = -amt;
-                displayAmtStr = amt.toFixed(2); // 支出顯示：-123.00
+                displayAmtStr = amt.toFixed(2); 
             } else {
-                displayAmtStr = "+" + amt.toFixed(2); // 🟢 修改：收入前面加上「+」符號，例如：+123.00
+                displayAmtStr = "+" + amt.toFixed(2); 
             }
             
             totalSum += amt;
@@ -396,7 +404,6 @@
             let tbody = document.getElementById('log-table-body');
             let row = document.createElement('tr');
             
-            // 🟢 修改：如果是收入(income)，顏色轉為鮮綠色 (#00ff66)；支出(expense)維持紅色
             let colorStyle = type === 'expense' ? 'color: #ff3333;' : 'color: #00ff66;';
             
             row.innerHTML = `
@@ -405,7 +412,6 @@
                 <td style="${colorStyle} text-align: right;">${displayAmtStr}</td>
             `;
             
-            // 新紀錄放到最頂
             tbody.insertBefore(row, tbody.firstChild);
 
             // 還原輸入狀態
@@ -433,14 +439,14 @@
             
             // 綁定快捷鍵字母
             let keyUpper = e.key.toUpperCase();
-            if (keyUpper === 'Q') selectShortcut('飲食🍛');
-            if (keyUpper === 'W') selectShortcut('交通🚌');
-            if (keyUpper === 'E') selectShortcut('購物👕');
-            if (keyUpper === 'R') selectShortcut('娛樂🎬');
-            if (keyUpper === 'A') selectShortcut('網購🛒');
-            if (keyUpper === 'S') selectShortcut('超市🛒');
-            if (keyUpper === 'D') selectShortcut('出糧💰');
-            if (keyUpper === 'F') selectShortcut('外快💸');
+            if (keyUpper === 'Q') selectShortcut('飲食 🍔');
+            if (keyUpper === 'W') selectShortcut('交通 🚌');
+            if (keyUpper === 'E') selectShortcut('購物 🎁');
+            if (keyUpper === 'R') selectShortcut('娛樂 🎬');
+            if (keyUpper === 'A') selectShortcut('網購 🛒');
+            if (keyUpper === 'S') selectShortcut('超市 🛒');
+            if (keyUpper === 'D') selectShortcut('出糧 💰');
+            if (keyUpper === 'F') selectShortcut('外快 💸');
         });
     </script>
 </body>
