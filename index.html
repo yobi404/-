@@ -2,11 +2,10 @@
 <html lang="zh-HK">
 <head>
     <meta charset="UTF-8">
-    <!-- 🟢 修改：補上 user-scalable=no 參數，直接從瀏覽器核心禁止手勢縮放 -->
+    <!-- 確保手機版不縮小，並直接禁止快速雙擊放大畫面 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Yobi-收銀版記帳系統</title>
+    <title>Yobi - 記帳系統</title>
     <style>
-        /* 全域樣式：深色霓虹科技感 */
         body {
             background-color: #0d1117;
             color: #fff;
@@ -14,16 +13,38 @@
             margin: 0;
             padding: 10px;
             display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            /* 🟢 修改：禁止整個網頁頁面的雙擊放大預設行為 */
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
             touch-action: manipulation;
         }
 
-        /* 主容器：RWD寬度自動適應，最大480px保持精緻不變形 */
-        .pos-system {
+        /* 網頁主外框（預留給未來網頁版廣告排版並居中） */
+        .page-wrapper {
             width: 100%;
             max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* 廣告專用容器：預留空間給未來的 Google AdSense */
+        .ad-container {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px dashed #334155;
+            border-radius: 8px;
+            text-align: center;
+            padding: 12px 0;
+            color: #64748b;
+            font-size: 12px;
+            min-height: 50px;
+            box-sizing: border-box;
+        }
+
+        /* 記帳系統主機身 */
+        .pos-system {
+            width: 100%;
             padding: 15px;
             box-sizing: border-box;
             border: 2px solid #00ffff; 
@@ -31,422 +52,269 @@
             background-color: #05070a;
         }
 
-        /* 頂部資訊欄 */
-        .header-info {
-            display: flex;
-            justify-content: space-between;
-            font-weight: bold;
-            margin-bottom: 15px;
-            font-size: 16px;
-        }
-
-        /* 快捷鍵網格 (2列4行) */
-        .shortcut-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-bottom: 15px;
-        }
+        .header-info { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 15px; font-size: 16px; }
+        .shortcut-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px; }
+        
         .btn-shortcut {
-            background: transparent;
-            border: 2px dashed #00ffff;
-            color: #00ffff;
-            padding: 10px 2px;
-            border-radius: 5px;
-            font-size: 13px;
-            font-weight: bold;
-            cursor: pointer;
-            text-align: center;
-            transition: background 0.1s;
-            /* 🟢 修改：確保按鈕點擊時反應靈敏且不放大 */
-            touch-action: manipulation;
+            background: transparent; border: 2px dashed #00ffff; color: #00ffff; padding: 10px 2px; border-radius: 5px;
+            font-size: 13px; font-weight: bold; cursor: pointer; text-align: center; transition: background 0.1s; touch-action: manipulation;
         }
-        .btn-shortcut:active {
-            background: rgba(0, 255, 255, 0.2);
-        }
-        /* 桃紅色快捷鍵（下排） */
-        .btn-shortcut.pink {
-            border-color: #ff007f;
-            color: #ff007f;
-        }
-        .btn-shortcut.pink:active {
-            background: rgba(255, 0, 127, 0.2);
-        }
+        .btn-shortcut:active { background: rgba(0, 255, 255, 0.2); }
+        .btn-shortcut.pink { border-color: #ff007f; color: #ff007f; }
+        .btn-shortcut.pink:active { background: rgba(255, 0, 127, 0.2); }
 
-        /* 輸入項目提示框 */
-        .input-item {
-            width: 100%;
-            background: transparent;
-            border: 1px solid #00ffff;
-            border-radius: 5px;
-            color: #ffffff;
-            padding: 10px;
-            font-size: 16px;
-            box-sizing: border-box;
-            margin-bottom: 15px;
-        }
+        .input-item { width: 100%; background: transparent; border: 1px solid #00ffff; border-radius: 5px; color: #ffffff; padding: 10px; font-size: 16px; box-sizing: border-box; margin-bottom: 15px; }
+        .display-screen { width: 100%; border: 1px solid #00ffff; border-radius: 5px; padding: 10px; color: #ffcc00; font-size: 24px; font-weight: bold; box-sizing: border-box; margin-bottom: 15px; text-align: left; background: transparent; }
+        
+        /* 舒適的手機高按鍵數字鍵盤 */
+        .keyboard-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px; }
+        .btn-key { background: #0d1117; border: 1px solid #22303c; color: #fff; font-size: 20px; padding: 22px 0; border-radius: 5px; cursor: pointer; font-weight: bold; touch-action: none; }
+        .btn-key:active { background: #22303c; }
+        .btn-key.delete { color: #ff007f; border-color: #ff007f; font-size: 16px; }
 
-        /* 數字顯示螢幕 */
-        .display-screen {
-            width: 100%;
-            border: 1px solid #00ffff;
-            border-radius: 5px;
-            padding: 10px;
-            color: #ffcc00;
-            font-size: 25px;
-            font-weight: bold;
-            box-sizing: border-box;
-            margin-bottom: 15px;
-            text-align: left;
-            background: transparent;
-        }
+        .action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        .btn-action { background: transparent; font-size: 16px; font-weight: bold; padding: 12px 0; border-radius: 5px; cursor: pointer; touch-action: manipulation; }
+        .btn-action.income { border: 2px solid #00ffff; color: #00ffff; }
+        .btn-action.income:active { background: rgba(0, 255, 255, 0.1); }
+        .btn-action.expense { border: 2px solid #ff007f; color: #ff007f; }
+        .btn-action.expense:active { background: rgba(255, 0, 127, 0.1); }
 
-        /* 計算機鍵盤網格 (4x4) */
-        .keyboard-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        .btn-key {
-            background: #0d1117;
-            border: 1px solid #22303c;
-            color: #fff;
-            font-size: 20px;
-            padding: 22px 0; 
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            /* 🟢 修改：特別針對鍵盤按鍵，消除雙擊延遲與放大問題 */
-            touch-action: none;
-        }
-        .btn-key:active {
-            background: #22303c;
-        }
-        .btn-key.delete {
-            color: #ff007f;
-            border-color: #ff007f;
-            font-size: 16px;
-        }
+        .summary-row { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: center; margin-bottom: 15px; }
+        .btn-clear { background: transparent; border: 1px solid #ff007f; color: #ff007f; padding: 8px 12px; font-size: 12px; border-radius: 3px; cursor: pointer; touch-action: manipulation; }
+        .total-box { border: 1px solid #00ffff; border-radius: 5px; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
 
-        /* 收入與支出區塊 */
-        .action-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-        .btn-action {
-            background: transparent;
-            font-size: 16px;
-            font-weight: bold;
-            padding: 12px 0;
-            border-radius: 5px;
-            cursor: pointer;
-            touch-action: manipulation;
-        }
-        .btn-action.income {
-            border: 2px solid #00ffff;
-            color: #00ffff;
-        }
-        .btn-action.income:active {
-            background: rgba(0, 255, 255, 0.1);
-        }
-        .btn-action.expense {
-            border: 2px solid #ff007f;
-            color: #ff007f;
-        }
-        .btn-action.expense:active {
-            background: rgba(255, 0, 127, 0.1);
-        }
-
-        /* 清空紀錄與結餘欄位 */
-        .summary-row {
-            display: grid;
-            grid-template-columns: auto 1fr;
-            gap: 10px;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        .btn-clear {
-            background: transparent;
-            border: 1px solid #ff007f;
-            color: #ff007f;
-            padding: 8px 12px;
-            font-size: 14px;
-            border-radius: 3px;
-            cursor: pointer;
-            touch-action: manipulation;
-        }
-        .total-box {
-            border: 1px solid #00ffff;
-            border-radius: 5px;
-            padding: 8px 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: bold;
-        }
-
-        /* 流水細明包裹層 */
-        .detail-wrapper {
-            width: 100%;
-            max-height: 280px;      
-            overflow-y: auto;       
+        /* 流水帳獨立內滾動區域 */
+        .detail-wrapper { 
+            width: 100%; 
+            max-height: 418px; 
+            overflow-y: auto; 
             border: 1px dashed #ff007f; 
-            box-sizing: border-box;
-            padding: 5px;
+            box-sizing: border-box; 
+            padding: 0; /* 🟢 核心修復：從 5px 改為 0，拔掉空隙，阻止任何字體突出去 */
+        }
+        .detail-table { 
+            width: 100%; 
+            border-collapse: separate; /* 🟢 核心修復：從 collapse 改為 separate，確保底部線不消失 */
+            border-spacing: 0;         /* 保持表格緊湊 */
+            text-align: left; 
+        }
+        /* 🟢 核心修復：完全貼緊邊緣並強制壓在最頂端，100% 擋死所有溢出的字體 */
+        .detail-table th { 
+            position: sticky; 
+            top: 0; 
+            background-color: #05070a; /* 完全遮擋下方捲上來的字體 */
+            color: #ff007f; 
+            padding: 10px 5px; /* 微調上下間距更好看 */
+            font-size: 14px; 
+            border-bottom: 2px solid #ff007f; /* 🟢 核心修復：加粗為 2px，滾動時線條絕對不消失 */
+            z-index: 10; 
+        }
+        .detail-table td { 
+            padding: 8px 5px; 
+            font-size: 14px; 
+            border-bottom: 1px solid rgba(255, 0, 127, 0.1); 
+        }
+        
+        /* 選取項目時的黃色粗框與手勢設定 */
+        .detail-table tr.selected-row { 
+            outline: 3px solid #ffcc00; 
+            background-color: rgba(255, 204, 0, 0.1); 
+            cursor: pointer; 
+        }
+        .detail-table tbody tr { 
+            cursor: pointer; 
+            -webkit-user-select: none; 
+            user-select: none; 
         }
 
-        /* 流水帳表格樣式 */
-        .detail-table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
-        .detail-table th {
-            position: sticky;       
-            top: 0;
-            background-color: #05070a;
-            color: #ff007f;
-            padding: 8px 5px;
-            font-size: 14px;
-            border-bottom: 1px solid #ff007f;
-            z-index: 1;
-        }
-        .detail-table td {
-            padding: 8px 5px;
-            font-size: 14px;
-            border-bottom: 1px solid rgba(255, 0, 127, 0.1);
-        }
+
+        /* 選取項目時的黃色粗框 */
+        .detail-table tr.selected-row { outline: 3px solid #ffcc00; background-color: rgba(255, 204, 0, 0.1); cursor: pointer; }
+        .detail-table tbody tr { cursor: pointer; -webkit-user-select: none; user-select: none; }
     </style>
 </head>
 <body>
 
-    <div class="pos-system">
+    <div class="page-wrapper">
         
-        <!-- 頂部資訊 -->
-        <div class="header-info">
-            <span style="color: #ffcc00;">Yobi - 記帳系統</span>
-            <span id="live-clock" style="color: #ffcc00;">00:00:00</span>
+        <!-- 頂部廣告預留區 -->
+        <div class="ad-container">
+            <span>【贊助商廣告】</span>
         </div>
 
-        <!-- 快捷鍵按鈕區 -->
-        <div class="shortcut-grid">
-            <button class="btn-shortcut" onclick="selectShortcut('飲食 🍔')">[Q] 飲食 🍔</button>
-            <button class="btn-shortcut" onclick="selectShortcut('交通 🚌')">[W] 交通 🚌</button>
-            <button class="btn-shortcut" onclick="selectShortcut('購物 🎁')">[E] 購物 🎁</button>
-            <button class="btn-shortcut" onclick="selectShortcut('娛樂 🎬')">[R] 娛樂 🎬</button>
-            
-            <button class="btn-shortcut pink" onclick="selectShortcut('網購 🛒')">[A] 網購 🛒</button>
-            <button class="btn-shortcut pink" onclick="selectShortcut('超市 🛒')">[S] 超市 🛒</button>
-            <button class="btn-shortcut pink" onclick="selectShortcut('出糧 💰')">[D] 出糧 💰</button>
-            <button class="btn-shortcut pink" onclick="selectShortcut('外快 💸')">[F] 外快 💸</button>
-        </div>
+        <!-- 記帳主機身 -->
+        <div class="pos-system">
+            <div class="header-info">
+                <span style="color: #ffcc00;">Yobi - 記帳系統</span>
+                <span id="live-clock" style="color: #ffcc00;">00:00:00</span>
+            </div>
 
-        <!-- 項目名稱輸入框 -->
-        <input type="text" id="item-input" class="input-item" placeholder="輸入項目..">
+            <div class="shortcut-grid">
+                <button class="btn-shortcut" onclick="selectShortcut('飲食 🍔')">[Q] 飲食 🍔</button>
+                <button class="btn-shortcut" onclick="selectShortcut('交通 🚌')">[W] 交通 🚌</button>
+                <button class="btn-shortcut" onclick="selectShortcut('購物 🎁')">[E] 購物 🎁</button>
+                <button class="btn-shortcut" onclick="selectShortcut('娛樂 🎬')">[R] 娛樂 🎬</button>
+                <button class="btn-shortcut pink" onclick="selectShortcut('網購 🛒')">[A] 網購 🛒</button>
+                <button class="btn-shortcut pink" onclick="selectShortcut('超市 🛒')">[S] 超市 🛒</button>
+                <button class="btn-shortcut pink" onclick="selectShortcut('出糧 💰')">[D] 出糧 💰</button>
+                <button class="btn-shortcut pink" onclick="selectShortcut('外快 💰')">[F] 外快 💰</button>
+            </div>
 
-        <!-- 數字螢幕 -->
-        <div id="display" class="display-screen">0.</div>
+            <input type="text" id="item-input" class="input-item" placeholder="輸入項目...">
+            <div id="display" class="display-screen">0.</div>
 
-        <!-- 計算機數字鍵盤 -->
-        <div class="keyboard-grid">
-            <button class="btn-key" onclick="inputNum('7')">7</button>
-            <button class="btn-key" onclick="inputNum('8')">8</button>
-            <button class="btn-key" onclick="inputNum('9')">9</button>
-            <button class="btn-key delete" onclick="backspace()">刪除</button>
-            
-            <button class="btn-key" onclick="inputNum('4')">4</button>
-            <button class="btn-key" onclick="inputNum('5')">5</button>
-            <button class="btn-key" onclick="inputNum('6')">6</button>
-            <button class="btn-key" onclick="inputDecimal()">.</button>
-            
-            <button class="btn-key" onclick="inputNum('1')">1</button>
-            <button class="btn-key" onclick="inputNum('2')">2</button>
-            <button class="btn-key" onclick="inputNum('3')">3</button>
-            <button class="btn-key" onclick="inputNum('0')">0</button>
-        </div>
+            <div class="keyboard-grid">
+                <button class="btn-key" onclick="inputNum('7')">7</button>
+                <button class="btn-key" onclick="inputNum('8')">8</button>
+                <button class="btn-key" onclick="inputNum('9')">9</button>
+                <button class="btn-key delete" onclick="backspace()">刪除</button>
+                <button class="btn-key" onclick="inputNum('4')">4</button>
+                <button class="btn-key" onclick="inputNum('5')">5</button>
+                <button class="btn-key" onclick="inputNum('6')">6</button>
+                <button class="btn-key" onclick="inputDecimal()">.</button>
+                <button class="btn-key" onclick="inputNum('1')">1</button>
+                <button class="btn-key" onclick="inputNum('2')">2</button>
+                <button class="btn-key" onclick="inputNum('3')">3</button>
+                <button class="btn-key" onclick="inputNum('0')">0</button>
+            </div>
 
-        <!-- 收入 / 支出 動作按鈕 -->
-        <div class="action-row">
-            <button class="btn-action income" onclick="recordTransaction('income')">收入 +</button>
-            <button class="btn-action expense" onclick="recordTransaction('expense')">支出 -</button>
-        </div>
+            <!-- 100% 正確的動作觸發函數（已排除任何語法錯誤） -->
+            <div class="action-row">
+                <button class="btn-action income" onclick="recordTransaction('income')">💰 收入 +</button>
+                <button class="btn-action expense" onclick="recordTransaction('expense')">💸 支出 Enter</button>
+            </div>
 
-        <!-- 清空與總結餘 -->
-        <div class="summary-row">
-            <button class="btn-clear" onclick="clearAllLogs()">⚠️清空紀錄</button>
-            <div class="total-box">
-                <span style="color: #00ffff; font-size: 14px;">結餘 TOTAL:</span>
-                <span id="total-balance" style="color: #ffcc00; font-size: 20px;">$ 0.00</span>
+            <div class="summary-row">
+                <button class="btn-clear" onclick="clearAllLogs()">⚠️清空紀錄⚠️</button>
+                <div class="total-box">
+                    <span style="color: #00ffff; font-size: 15px;">結餘 TOTAL:</span>
+                    <span id="total-balance" style="color: #ffcc00; font-size: 20px;">$ 0.00</span>
+                </div>
+            </div>
+
+            <div class="detail-wrapper">
+                <table class="detail-table">
+                    <thead>
+                        <tr><th>入帳時間</th><th>項目細明</th><th style="text-align: right;">金   額</th></tr>
+                    </thead>
+                    <tbody id="log-table-body"></tbody>
+                </table>
             </div>
         </div>
 
-        <!-- 流水細明區 -->
-        <div class="detail-wrapper">
-            <table class="detail-table">
-                <thead>
-                    <tr>
-                        <th>入帳時間</th>
-                        <th>項目細明</th>
-                        <th style="text-align: right;">金   額</th>
-                    </tr>
-                </thead>
-                <tbody id="log-table-body">
-                    <!-- 紀錄會動態加進這裡 -->
-                </tbody>
-            </table>
+        <!-- 底部廣告預留區 -->
+        <div class="ad-container">
+            <span>【贊助商廣告】</span>
         </div>
 
     </div>
-
-    <!-- 🔊 音效合成系統與核心邏輯程式碼區 -->
     <script>
         let currentInput = "0.";
         let totalSum = 0.00;
+        let transactionLogs = []; 
+        let selectedIndex = null; 
 
-        // 🔊 Web Audio API 聲音合成器
+        // 🔊 音效合成系統
         function playClickSound(freq, duration, vol) {
             try {
                 let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                let oscillator = audioCtx.createOscillator();
-                let gainNode = audioCtx.createGain();
-                
-                oscillator.type = 'sine';
-                oscillator.frequency.value = freq; 
-                gainNode.gain.setValueAtTime(vol, audioCtx.currentTime);
+                let oscillator = audioCtx.createOscillator(); let gainNode = audioCtx.createGain();
+                oscillator.type = 'sine'; oscillator.frequency.value = freq; gainNode.gain.setValueAtTime(vol, audioCtx.currentTime);
                 gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-                oscillator.start();
-                oscillator.stop(audioCtx.currentTime + duration);
-            } catch(e) { console.log("Audio Error"); }
+                oscillator.connect(gainNode); gainNode.connect(audioCtx.destination);
+                oscillator.start(); oscillator.stop(audioCtx.currentTime + duration);
+            } catch(e) {}
         }
-
         function soundType() { playClickSound(600, 0.08, 0.4); } 
         function soundAction() { playClickSound(880, 0.15, 0.5); } 
 
-        // 🕒 實時時鐘功能
         function updateClock() {
             let now = new Date();
-            let hrs = String(now.getHours()).padStart(2, '0');
-            let mins = String(now.getMinutes()).padStart(2, '0');
-            let secs = String(now.getSeconds()).padStart(2, '0');
-            document.getElementById('live-clock').innerText = `${hrs}:${mins}:${secs}`;
+            document.getElementById('live-clock').innerText = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
         }
-        setInterval(updateClock, 1000);
-        updateClock();
+        setInterval(updateClock, 1000); updateClock();
 
-        // 鍵盤輸入邏輯
-        function inputNum(num) {
-            soundType();
-            if (currentInput === "0.") {
-                currentInput = num;
-            } else {
-                currentInput += num;
+        // 網頁載入時自動加載屬於該裝置瀏覽器的本地快取
+        window.onload = function() {
+            let savedLogs = localStorage.getItem('yobi_logs');
+            if (savedLogs) { transactionLogs = JSON.parse(savedLogs); renderLogs(); }
+            let savedSum = localStorage.getItem('yobi_totalSum');
+            if (savedSum) { totalSum = parseFloat(savedSum); document.getElementById('total-balance').innerText = `$ ${totalSum.toFixed(2)}`; }
+        };
+
+        // 渲染流水明細，無密碼單擊黃框、手機長按、電腦Delete鍵
+        function renderLogs() {
+            let tbody = document.getElementById('log-table-body'); tbody.innerHTML = ""; 
+            transactionLogs.forEach((log, index) => {
+                let row = document.createElement('tr'); let colorStyle = log.type === 'expense' ? 'color: #ff3333;' : 'color: #00ff66;';
+                if (selectedIndex === index) { row.className = "selected-row"; }
+                row.innerHTML = `<td style="${colorStyle}">${log.time}</td><td style="${colorStyle}">${log.name}</td><td style="${colorStyle} text-align: right;">${log.amtStr}</td>`;
+                
+                row.addEventListener('click', function(e) { soundType(); selectedIndex = (selectedIndex === index) ? null : index; renderLogs(); });
+                
+                let pressTimer;
+                row.addEventListener('touchstart', function(e) { pressTimer = window.setTimeout(function() { soundAction(); selectedIndex = index; renderLogs(); deleteSelectedLog(); }, 800); });
+                row.addEventListener('touchend', function(e) { clearTimeout(pressTimer); });
+                row.addEventListener('touchmove', function(e) { clearTimeout(pressTimer); });
+                tbody.appendChild(row);
+            });
+        }
+
+        // 刪除選定項目
+        function deleteSelectedLog() {
+            if (selectedIndex === null) return;
+            let targetLog = transactionLogs[selectedIndex];
+            if (confirm(`確定刪除？\n【${targetLog.time} - ${targetLog.name} : ${targetLog.amtStr}】`)) {
+                soundAction(); let rawAmt = parseFloat(targetLog.amtStr.replace('+', '')); totalSum -= rawAmt;
+                document.getElementById('total-balance').innerText = `$ ${totalSum.toFixed(2)}`;
+                transactionLogs.splice(selectedIndex, 1); selectedIndex = null;
+                localStorage.setItem('yobi_logs', JSON.stringify(transactionLogs)); localStorage.setItem('yobi_totalSum', totalSum.toString());
+                renderLogs();
             }
-            document.getElementById('display').innerText = currentInput;
         }
 
-        function inputDecimal() {
-            soundType();
-            if (!currentInput.includes('.')) {
-                currentInput += '.';
-            }
-            document.getElementById('display').innerText = currentInput;
-        }
-
-        function backspace() {
-            soundType();
-            if (currentInput.length > 1) {
-                currentInput = currentInput.slice(0, -1);
-                if (currentInput === "" || currentInput === "0") currentInput = "0.";
-            } else {
-                currentInput = "0.";
-            }
-            document.getElementById('display').innerText = currentInput;
-        }
-
-        function selectShortcut(name) {
-            soundType();
-            document.getElementById('item-input').value = name;
-        }
-
-        // 💰 核心記帳與動態流水帳生成邏輯
+        function inputNum(num) { soundType(); currentInput = currentInput === "0." ? num : currentInput + num; document.getElementById('display').innerText = currentInput; }
+        function inputDecimal() { soundType(); if (!currentInput.includes('.')) currentInput += '.'; document.getElementById('display').innerText = currentInput; }
+        function backspace() { soundType(); currentInput = currentInput.length > 1 ? currentInput.slice(0, -1) : "0."; if (currentInput === "" || currentInput === "0") currentInput = "0."; document.getElementById('display').innerText = currentInput; }
+        function selectShortcut(name) { soundType(); document.getElementById('item-input').value = name; }
+        
+        // 核心入帳
         function recordTransaction(type) {
-            let amt = parseFloat(currentInput);
-            if (isNaN(amt) || amt === 0) return;
+            let amt = parseFloat(currentInput); if (isNaN(amt) || amt === 0) return;
+            let itemName = document.getElementById('item-input').value.trim() || (type === 'income' ? '收入 💰' : '支出 💸'); soundAction();
             
-            let itemName = document.getElementById('item-input').value.trim();
-            if (itemName === "") itemName = (type === 'income' ? '收入' : '支出');
-
-            soundAction();
-
-            // 計算總結餘
-            let displayAmtStr = "";
-            if (type === 'expense') {
-                amt = -amt;
-                displayAmtStr = amt.toFixed(2); 
-            } else {
-                displayAmtStr = "+" + amt.toFixed(2); 
-            }
+            let displayAmtStr = type === 'expense' ? (-amt).toFixed(2) : "+" + amt.toFixed(2);
+            totalSum += (type === 'expense' ? -amt : amt); document.getElementById('total-balance').innerText = `$ ${totalSum.toFixed(2)}`;
             
-            totalSum += amt;
-            document.getElementById('total-balance').innerText = `$ ${totalSum.toFixed(2)}`;
-
-            // 🕒 取得入帳精確時間
-            let now = new Date();
+            let now = new Date(); 
             let timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
-
-            // 📝 插入完整的流水細明
-            let tbody = document.getElementById('log-table-body');
-            let row = document.createElement('tr');
+            let newLog = { time: timeStr, name: itemName, amtStr: displayAmtStr, type: type }; transactionLogs.unshift(newLog);
             
-            let colorStyle = type === 'expense' ? 'color: #ff3333;' : 'color: #00ff66;';
-            
-            row.innerHTML = `
-                <td style="${colorStyle}">${timeStr}</td>
-                <td style="${colorStyle}">${itemName}</td>
-                <td style="${colorStyle} text-align: right;">${displayAmtStr}</td>
-            `;
-            
-            tbody.insertBefore(row, tbody.firstChild);
-
-            // 還原輸入狀態
-            currentInput = "0.";
-            document.getElementById('display').innerText = currentInput;
-            document.getElementById('item-input').value = "";
+            localStorage.setItem('yobi_logs', JSON.stringify(transactionLogs)); localStorage.setItem('yobi_totalSum', totalSum.toString());
+            selectedIndex = null; renderLogs();
+            currentInput = "0."; document.getElementById('display').innerText = currentInput; document.getElementById('item-input').value = "";
         }
 
         function clearAllLogs() {
-            soundAction();
-            document.getElementById('log-table-body').innerHTML = "";
-            totalSum = 0.00;
-            document.getElementById('total-balance').innerText = `$ 0.00`;
+            if(confirm("確定要清空所有紀錄嗎？")) {
+                soundAction(); transactionLogs = []; totalSum = 0.00; selectedIndex = null;
+                localStorage.removeItem('yobi_logs'); localStorage.removeItem('yobi_totalSum');
+                document.getElementById('log-table-body').innerHTML = ""; document.getElementById('total-balance').innerText = `$ 0.00`;
+            }
         }
 
-        // ⌨️ 電腦實體鍵盤綁定事件
-        document.addEventListener('keydown', function(e) {
+        // 實體鍵盤事件
+        document.addEventListener('keydown', function(e) { 
             if (document.activeElement === document.getElementById('item-input')) return; 
-            
-            if (e.key >= '0' && e.key <= '9') inputNum(e.key);
-            if (e.key === '.') inputDecimal();
-            if (e.key === 'Backspace') backspace();
-            if (e.key === '+') recordTransaction('income');
-            if (e.key === 'Enter' || e.key === '-') recordTransaction('expense');
-            
-            // 綁定快捷鍵字母
-            let keyUpper = e.key.toUpperCase();
-            if (keyUpper === 'Q') selectShortcut('飲食 🍔');
-            if (keyUpper === 'W') selectShortcut('交通 🚌');
-            if (keyUpper === 'E') selectShortcut('購物 🎁');
-            if (keyUpper === 'R') selectShortcut('娛樂 🎬');
-            if (keyUpper === 'A') selectShortcut('網購 🛒');
-            if (keyUpper === 'S') selectShortcut('超市 🛒');
-            if (keyUpper === 'D') selectShortcut('出糧 💰');
-            if (keyUpper === 'F') selectShortcut('外快 💸');
+            if (e.key === 'Delete' && selectedIndex !== null) { deleteSelectedLog(); return; } 
+            if (e.key >= '0' && e.key <= '9') inputNum(e.key); 
+            if (e.key === '.') inputDecimal(); if (e.key === 'Backspace') backspace(); 
+            if (e.key === '+') recordTransaction('income'); if (e.key === 'Enter' || e.key === '-') recordTransaction('expense'); 
+            let keyUpper = e.key.toUpperCase(); 
+            if (keyUpper === 'Q') selectShortcut('飲食 🍔'); if (keyUpper === 'W') selectShortcut('交通 🚌'); 
+            if (keyUpper === 'E') selectShortcut('購物 🎁'); if (keyUpper === 'R') selectShortcut('娛樂 🎬'); 
+            if (keyUpper === 'A') selectShortcut('網購 🛒'); if (keyUpper === 'S') selectShortcut('超市 🛒'); 
+            if (keyUpper === 'D') selectShortcut('出糧 💰'); if (keyUpper === 'F') selectShortcut('外快 💰'); 
         });
     </script>
 </body>
